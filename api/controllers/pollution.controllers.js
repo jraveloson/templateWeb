@@ -86,6 +86,21 @@ exports.update = (req, res) => {
 		.catch(err => res.status(500).send({ message: err.message }));
 };
 
+exports.delete = async (req, res) => {
+	const id = parseInt(req.params.id, 10);
+	if (isNaN(id)) return res.status(400).send({ message: "ID invalide" });
+
+	Pollution.destroy({ where: { id } })
+		.then(num => {
+			if (num === 1) {
+				res.send({ message: `Pollution avec id=${id} supprimée avec succès.` });
+			} else {
+				res.status(404).send({ message: `Impossible de trouver la pollution avec id=${id}` });
+			}
+		})
+		.catch(err => res.status(500).send({ message: err.message }));
+};
+
 
 
 

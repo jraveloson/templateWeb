@@ -69,4 +69,23 @@ exports.create = async (req, res) => {
 		});
 };
 
+exports.update = (req, res) => {
+	const id = parseInt(req.params.id, 10);
+	if (isNaN(id)) {
+		return res.status(400).send({ message: 'ID invalide' });
+	}
+
+	Pollution.update(req.body, { where: { id } })
+		.then(num => {
+			if (num == 1) {
+				res.send({ message: "Pollution modifiée avec succès." });
+			} else {
+				res.status(404).send({ message: `Impossible de mettre à jour la pollution avec l'id=${id}` });
+			}
+		})
+		.catch(err => res.status(500).send({ message: err.message }));
+};
+
+
+
 

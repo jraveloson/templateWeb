@@ -6,6 +6,7 @@ module.exports = app => {
   router.get("/", pollution.get);
   router.get("/:id", pollution.getById);
   router.post("/", pollution.create);
+  router.put("/:id", pollution.update);
 
   app.use('/api/pollution', router);
 };

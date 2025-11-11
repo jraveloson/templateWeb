@@ -1,44 +1,47 @@
-const { v4: uuidv4 } = require ("uuid");
+const { v4: uuidv4 } = require("uuid");
 
 
 const db = require("../models");
-const Utilisateurs = db.utilisateurs;
+const Utilisateurs = db.utilisateur;
 const Op = db.Sequelize.Op;
 
-// Find a single Utilisateur with an login
-exports.login = (req, res) => {
-  const utilisateur = {
-    login: req.body.login,
-    password: req.body.password
-  };
+exports.getAll = (req, res) => {
 
-  // Test
-  let pattern = /^[A-Za-z0-9]{1,20}$/;
-  if (pattern.test(utilisateur.login) && pattern.test(utilisateur.password)) {
-     Utilisateurs.findOne({ where: { login: utilisateur.login } })
-    .then(data => {
-      if (data) {
-        const user = {
-          id: data.id,
-          name: data.nom,
-          email: data.email
-        };
-      
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `Cannot find Utilisateur with login=${utilisateur.login}.`
-        });
-      }
-    })
+  Utilisateurs.findAll()
+    .then(data => { res.send(data); })
     .catch(err => {
       res.status(400).send({
-        message: "Error retrieving Utilisateur with login=" + utilisateur.login
+        message: err.message
       });
     });
-  } else {
-    res.status(400).send({
-      message: "Login ou password incorrect" 
-    });
-  }
 };
+
+exports.create = async (req, res) => {
+  const {
+    nom,
+    prenom,
+    login,
+    pass
+  } = req.body;
+
+  // Validation des champs
+  if (!nom) return res.status(400).json({ message: "Le champ 'nom' est obligatoire." });
+  if (!prenom) return res.status(400).json({ message: "Le champ 'prenom' est obligatoire." });
+  if (!login) return res.status(400).json({ message: "Le champ 'login' est obligatoire." });
+  if (!pass) return res.status(400).json({ message: "Le champ 'pass' est obligatoire." });
+
+  const utilisateur = { nom, prenom, login, pass };
+
+  Utilisateurs.create(utilisateur)
+    .then(data => {
+      res.status(201).send({
+        message: "Utilisateur créé avec succès.",
+        utilisateur: data
+      });
+    })
+    .catch(err => {
+      console.error("Erreur lors de la création de l'utilisateur : ", err);
+      res.status(500).send({ message: err.message });
+    });
+};
+

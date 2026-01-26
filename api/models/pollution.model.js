@@ -31,6 +31,10 @@ module.exports = (sequelize, Sequelize) => {
         },
         photo_url: {
             type: Sequelize.STRING
+        },
+        userId: {
+            type: Sequelize.INTEGER,
+            allowNull: true
         }
     });
 

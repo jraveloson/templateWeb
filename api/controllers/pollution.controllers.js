@@ -54,13 +54,26 @@ exports.create = async (req, res) => {
 	if (latitude == null) return res.status(400).json({ message: "Le champ 'latitude' est obligatoire." });
 	if (longitude == null) return res.status(400).json({ message: "Le champ 'longitude' est obligatoire." });
 
-	const pollution = { titre, type_pollution, description, lieu, date_observation, latitude, longitude, photo_url };
+	console.log('[Pollution Create] userId receveur:', req.userId);
+
+	const pollution = {
+		titre,
+		type_pollution,
+		description,
+		lieu,
+		date_observation,
+		latitude,
+		longitude,
+		photo_url,
+		userId: req.userId
+	};
 
 	Pollution.create(pollution)
 		.then(data => {
+			console.log('[Pollution Create] Pollution créée avec userId:', data.userId);
 			res.status(201).send({
 				message: "Pollution créée avec succès.",
-				pollution: data
+				pollution: data.toJSON ? data.toJSON() : data
 			});
 		})
 		.catch(err => {
